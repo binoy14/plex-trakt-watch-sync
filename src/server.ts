@@ -6,7 +6,6 @@ const app = express();
 const upload = multer({ dest: "/tmp/" });
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-console.log(ACCESS_TOKEN);
 const PORT = process.env.PORT || 3000;
 
 export interface Payload {
@@ -113,6 +112,8 @@ app.post(
         );
 
         const item = data[0];
+        console.log("Found", JSON.stringify(item, null, 2));
+
         const { movie = {}, episode = {} } = item;
         let body: any = { movies: [], episodes: [] };
 
