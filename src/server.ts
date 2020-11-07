@@ -33,6 +33,7 @@ export interface Metadata {
   type: string;
   title: string;
   originalTitle: string;
+  grandparentTitle?: string;
   summary: string;
   viewCount: number;
   lastViewedAt: number;
@@ -91,7 +92,6 @@ app.post(
   upload.single("thumb"),
   async (req: express.Request, res: express.Response) => {
     const payload: Payload = JSON.parse(req.body.payload);
-
     // Note that the owner ID will always be 1.
     if (payload.event === "media.scrobble" && payload.Account.id === 1) {
       console.log("Finshed episode or movie");
@@ -111,7 +111,17 @@ app.post(
           }
         );
 
-        const item = data[0];
+        let item;
+        if (payload.Metadata.type === "episode") {
+          item = data.find(
+            (d: any) =>
+              d?.show?.title === payload.Metadata.grandparentTitle &&
+              d?.episode?.title === payload.Metadata.title
+          );
+        } else {
+          item = data[0];
+        }
+
         console.log("Found", JSON.stringify(item, null, 2));
 
         const { movie = {}, episode = {} } = item;
